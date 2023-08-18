@@ -3,6 +3,8 @@ package com.att.carservice.controller;
 import com.att.carservice.dto.CarDto;
 import com.att.carservice.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
+@RefreshScope
 @RequestMapping("/cars")
 public class CarController {
 
     private static final Logger logger = LoggerFactory.getLogger(CarController.class);
 
+    @Value("${example.property}")
+    private String exampleProperty;
     private final CarService carService;
 
     @Autowired
@@ -36,6 +41,7 @@ public class CarController {
 
     @GetMapping("/{id}")
     public CarDto getCarById(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
+        logger.info("exampleProperty: {}", exampleProperty);
         return carService.getCarById(id);
     }
 

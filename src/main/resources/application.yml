@@ -3,6 +3,8 @@ spring:
     name: car-service
   profiles:
     active: development
+  config:
+    import: configserver:http://localhost:8888
   datasource:
     url: jdbc:postgresql://localhost:5433/car_db
     username: car_ms
@@ -13,10 +15,46 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   cloud:
     config:
-      enabled: false
+      profile: development
+      fail-fast: true
+      retry:
+        max-attempts: 5
+        max-interval: 3000
+        initial-interval: 1500
+    bus:
+      enabled: true
+      refresh:
+        enabled: true
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+          zkNodes: localhost:2181
+        bindings:
+          springCloudBus:
+            destination: springCloudBus
+  zipkin:
+  baseUrl: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1.0
 
 server:
   port: 8082
+
+management:
+  endpoint:
+    web:
+      exposure:
+        include: "*"
+  security:
+    enabled: false
+
+spring.cloud.config.server.refresh.enabled: true
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:
